@@ -1,6 +1,6 @@
 <?php
 
-	require_once "muvandy/muvandy.php";
+	require_once "lib/muvandy.php";
 
 	if ( isset($_SERVER["REMOTE_ADDR"]) ) {
 		$ip = $_SERVER["REMOTE_ADDR"] . ' ';
