@@ -121,7 +121,8 @@ class MuvandyVisitor {
 	}
 
 	public function convert(){
-		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?".implode('&',$this->params()));
+		// value=50 hard coded for now
+		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=50".implode('&',$this->params()));
 		if ($xml){
 			$this->parse_visitor_from_xml($xml);
 		}
