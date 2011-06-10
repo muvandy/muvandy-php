@@ -2,8 +2,8 @@
 
 	require_once "lib/muvandy.php";
 
-	$muvandy = new MuvandyVisitor("pp-home", 'zih6XJy5feIxY5uNAW4', true);
-	$muvandy->convert();
+	$muvandy = new MuvandyVisitor("mysite-home", 'your-api-key', true);
+	$muvandy->convert("49.99");
 ?>
 <html>
 	<body>

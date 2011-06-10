@@ -120,9 +120,15 @@ class MuvandyVisitor {
 		}
 	}
 
-	public function convert(){
-		// value=50 hard coded for now
-		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=50".implode('&',$this->params()));
+	/*
+	*		Parameters:
+	*   	$value - A decimal/float value (required)
+	*/
+	public function convert($value){
+		if (!floatval($value)) {
+			throw new Exception("Convert require's a decimal value.");
+		}
+		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=".$value.implode('&',$this->params()));
 		if ($xml){
 			$this->parse_visitor_from_xml($xml);
 		}
