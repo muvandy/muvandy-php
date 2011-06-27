@@ -128,7 +128,7 @@ class MuvandyVisitor {
 		if (!floatval($value)) {
 			throw new Exception("Convert require's a decimal value.");
 		}
-		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=".$value.implode('&',$this->params()));
+		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=".$value.'&'.implode('&',$this->params()));
 		if ($xml){
 			$this->parse_visitor_from_xml($xml);
 		}
