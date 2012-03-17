@@ -2,22 +2,22 @@
 
 	require_once "lib/muvandy.php";
 
-	$muvandy = new MuvandyVisitor("mysite-home", 'your-api-key');
+	$muvandy = new Muvandy("experiment-id", 'your-api-key');
 ?>
 <html>
 	<body>
-		<h1><?= $muvandy->version("coming-headline"); ?></h1>
+		<h1><?= $muvandy->visitor_value("Headline", "<h1>Welcome</h1>"); ?></h1>
 		<ul>
-			<?= $muvandy->version("bullet-1"); ?>
-			<?= $muvandy->version("bullet-2"); ?>				
-			<?= $muvandy->version("bullet-3"); ?>								
-			<?= $muvandy->version("bullet-4"); ?>								
+			<?= $muvandy->visitor_value("Header Bullet 1"); ?>
+			<?= $muvandy->visitor_value("Header Bullet 2", "<li>Listing 2</li>"); ?>				
+			<?= $muvandy->visitor_value("Header Bullet 3", "<li>Listing 3</li>"); ?>								
+			<?= $muvandy->visitor_value("Header Bullet 4", "<li>Listing 4</li>"); ?>
 		</ul>
 
 			<p>
-				<?= $muvandy->version("call-to-action"); ?>								
+				<?= $muvandy->visitor_value("call-to-action"); ?>								
 				<input type="text" />
-				<input type="button" value="<?= $muvandy->version("button"); ?>" />
+				<input type="button" value="<?= $muvandy->visitor_value("button"); ?>" />
 			</p>
 	</body>
 </html>

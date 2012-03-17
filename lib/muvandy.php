@@ -1,96 +1,76 @@
 <?php
 /*
 *		Muvandy API Client
-*		@version 0.01a
+*		@version 0.01b
 */
 
 /*
-*  MuvandyVisitor class
+*  Muvandy class
 */
-class MuvandyVisitor {
+class Muvandy {
+	const API_URI = "/api/v1";
 	
-	const BASE_URI = "http://muvandy.com";
-	
-	public $id;
-	public $template_id;
-	public $referrer;
-	public $fake;
-	public $medium;
-	public $updated_at;
-	public $campaign;
-	public $value;
-	public $referrer_domain;
-	public $converted;
-	public $source;
-	public $ip_address;
-	public $keywords;
-	public $created_at;
-	public $token;
-	
-	private $variables_hash;
-	private $tpl_slug;
+	public $id;  // visitor $id
 
-	/*
-	*	 Creates an instance and fetches all variable versions.
-	*/
-	public function __construct($tpl_slug, $api_key, $dont_fetch_vars=false) {
+	public $token;	
+	private $variables_hash;
+	private $slug;
+	private $base_uri;
+
+
+	function visitor_value($key="", $default=""){
+		if (!empty($key)){
+			$output = $this->variable_version($key);
+			if (empty($output)){ $output = $default; }
+			return $output;
+		}
+	}
+
+	// Parameters:
+	// 	$value - A decimal/float value (required)
+	function _convert($value){
+		if (!floatval($value)) {
+			throw new Exception("Convert require's a decimal value.");
+		}
+		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/convert?value=".$value.'&'.implode('&',$this->params()));
+		if ($xml){
+			$this->parse_visitor_from_xml($xml);
+		}
+	}
+
+	// Returns an array of variable keys 
+	function vairable_keys() {
+		if (count($this->variables_hash)){
+			return array_keys($this->variables_hash);
+		}
+	}
+
+
+	/* PUBLIC */
+
+	// Initializes and fetches all variable versions.
+	public function __construct($slug, $api_key, $skip_fetch_vars=false, $host='muvandy.com'){
+		$this->base_uri = "http://".$host;
 		$this->token = $api_key;
-		$this->tpl_slug = $tpl_slug;
-		if (!$dont_fetch_vars){
+		$this->slug = $slug;
+		if (!$skip_fetch_vars){
 			$this->fetch_visitor_values();
 		}
 	}
-	
-	public function parse_visitor_from_xml(SimpleXmlElement $xml)	{
-		foreach($xml as $key => $value){
-			switch($key){
-				case 'id': 
-					$this->id = (int) $value;
-					break;
-				case 'template-id': 
-					$this->template_id = (int) $value;
-					break;
-				case 'fake':
-					$this->fake = (bool)$value;
-					break;
-				case 'converted': 
-					$this->converted = (bool)$value;
-					break;
-				case 'keywords':
-					$this->keywords = (string)$value;
-					break;
-				case 'medium':
-					$this->medium = (string)$value;
-					break;
-				case 'referrer':
-					$this->referrer = (string) $value;
-					break;
-				case "referrer-domain]":
-					$this->referrer_domain = (string) $value;
-					break;
-				case "source":
-					$this->source = (string) $value;
-					break;
-				case "updated-at":
-					$this->updated_at = strtotime($value);	// timestamp
-					break;
-				case "value": 
-					$this->value = (float) $value;
-					break;
-				case "ip-address":
-					$this->ip_address = (string) $value;
-					break;
-				case "created-at":
-					$this->created_at = strtotime($value); //timestamp
-			}
 
-		}
+	public function convert($value, $slug, $api_key, $host='dev.muvandy.com'){
+		$mvuandy = new self($slug, $api_key, true, $host);
+		$mvuandy->_convert($value);	
 	}
 
-	private function fetch_visitor_values() {		
-		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/variable_versions.xml?".implode("&",$this->params()));
+
+	/* PRIVATE */
+
+	// GET /api/v{current_version}/experiments/:slug/visitors/variable_versions.xml
+	private function fetch_visitor_values(){
+		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/variable_versions.xml?".implode("&",$this->params()));
 		try {
-			$this->id = (int) $xml->id;
+			// $this->id = (int) $xml->id;
 			$variables = $xml->variable_versions->variable;
 			for($i=0; $i<count($variables); $i++){
 				$v = $variables[$i];
@@ -101,46 +81,31 @@ class MuvandyVisitor {
 		}
 	}
 
-	public function variable_version($key=""){
+	private function parse_visitor_from_xml(SimpleXmlElement $xml){
+		foreach($xml as $key => $value){
+			switch($key){
+				case 'id': 
+					$this->id = (int) $value;
+					break;
+			}
+
+		}
+	}
+
+	// Get value from $variables_hash
+	private function variable_version($key=""){
 		if (count($this->variables_hash)){
 	 		return $this->variables_hash[$key];
 		}
 	}
 
-	// Shorthand for variable_version() 
-	public function version($key=""){
-		if (!empty($key)){
-			return $this->variable_version($key);
-		}
-	}
-	
-	public function version_keys() {
-		if (count($this->variables_hash)){
-			return array_keys($this->variables_hash);
-		}
-	}
-
-	/*
-	*		Parameters:
-	*   	$value - A decimal/float value (required)
-	*/
-	public function convert($value){
-		if (!floatval($value)) {
-			throw new Exception("Convert require's a decimal value.");
-		}
-		$xml = $this->get("/tests/".$this->tpl_slug."/visitors/convert?value=".$value.'&'.implode('&',$this->params()));
-		if ($xml){
-			$this->parse_visitor_from_xml($xml);
-		}
-	}
-
-	private function curl_defaults(&$curl_obj) 	{
+	private function curl_defaults(&$curl_obj){
 		curl_setopt($curl_obj, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl_obj, CURLOPT_HEADER, 0);
 		curl_setopt($curl_obj, CURLOPT_USERPWD, $this->token.':');
 	}
 
-	private function client_ip() {		
+	private function client_ip() {
 		if ( isset($_SERVER["REMOTE_ADDR"]) ) {
 			$ip = $_SERVER["REMOTE_ADDR"] . ' ';
 		} else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ){
@@ -151,7 +116,8 @@ class MuvandyVisitor {
 		return trim($ip);
 	}
 
-	private function params(){		
+	// Sets parameters
+	private function params(){
 		$arr1 = array("visitor_ip" => $this->client_ip()); //, "mode" => $_REQUEST["mode"]);
 
 		if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
@@ -172,7 +138,7 @@ class MuvandyVisitor {
 	}
 
 	private function get($url){
-		$ch = curl_init(self::BASE_URI.$url);		
+		$ch = curl_init($this->base_uri.$url);		
 		$this->curl_defaults($ch);
 		$resposne = curl_exec($ch);
 		curl_close($ch);
@@ -185,7 +151,7 @@ class MuvandyVisitor {
 	}
 
 	private function post($url, $post_vars=""){
-		$ch = curl_init(self::BASE_URI.$url);		
+		$ch = curl_init($this->base_uri.$url);		
 		self::curl_defaults($ch);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_vars);
 		$response = curl_exec($ch);

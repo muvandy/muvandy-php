@@ -1,9 +1,7 @@
 <?php
-
 	require_once "lib/muvandy.php";
 
-	$muvandy = new MuvandyVisitor("mysite-home", 'your-api-key', true);
-	$muvandy->convert("49.99");
+	Muvandy::convert("49.99", "mysite-home", 'your-api-key');
 ?>
 <html>
 	<body>

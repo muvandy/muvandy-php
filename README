@@ -1,1 +1,30 @@
 PHP library for working with Muvandy API
+
+
+Usage:
+
+	Initialize Muvandy class.
+	
+	<?php
+		require_once "lib/muvandy.php";	
+		$muvandy = new Muvandy('experiment-id', 'your-api-key');
+	?>
+	
+	Get the value by providing variable key and an optional default value.
+	Default value will be displayed if value is not available.
+	
+	<?php
+		$muvandy->visitor_value('heading-1', '<h1>Welcome</h1>');
+	?>
+
+
+	Thank You page.
+	
+	Just include the code below on your post submission or thank you page.
+	
+	<?php
+		require_once "lib/muvandy.php";	
+		
+		Muvandy::convert("1.0", "experiment-id", 'your-api-key');
+		
+	?>
