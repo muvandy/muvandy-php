@@ -14,7 +14,7 @@ Usage:
 	Default value will be displayed if value is not available.
 	
 	<?php
-		$muvandy->visitor_value('heading-1', '<h1>Welcome</h1>');
+		$muvandy->get_variation('heading-1', '<h1>Welcome</h1>');
 	?>
 
 

@@ -18,7 +18,7 @@ class Muvandy {
 	private $base_uri;
 
 
-	function visitor_value($key="", $default=""){
+	function get_variation($key="", $default=""){
 		if (!empty($key)){
 			$output = $this->variable_version($key);
 			if (empty($output)){ $output = $default; }
