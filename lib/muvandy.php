@@ -42,6 +42,8 @@ class Muvandy {
 	function vairable_keys() {
 		if (count($this->variables_hash)){
 			return array_keys($this->variables_hash);
+		} else {
+			return array();
 		}
 	}
 
@@ -142,10 +144,14 @@ class Muvandy {
 		$this->curl_defaults($ch);
 		$resposne = curl_exec($ch);
 		curl_close($ch);
-		if ($resposne) {
-			$xml = new SimpleXmlElement($resposne, LIBXML_NOCDATA);
-			return $xml;
-		}else {
+		try {
+			if ($resposne) {
+				$xml = new SimpleXmlElement($resposne, LIBXML_NOCDATA);
+				return $xml;
+			}else {
+				return false;
+			}
+		} catch (Exception $e) {
 			return false;
 		}
 	}
