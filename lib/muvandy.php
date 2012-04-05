@@ -68,12 +68,12 @@ class Muvandy {
 
 	/* PRIVATE */
 
-	// GET /api/v{current_version}/experiments/:slug/visitors/variable_versions.xml
+	// GET /api/v{current_version}/experiments/:slug/visitors/variable_variations.xml
 	private function fetch_visitor_values(){
-		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/variable_versions.xml?".implode("&",$this->params()));
+		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/variable_variations.xml?".implode("&",$this->params()));
 		try {
 			// $this->id = (int) $xml->id;
-			$variables = $xml->variable_versions->variable;
+			$variables = $xml->variable_variations->variable;
 			for($i=0; $i<count($variables); $i++){
 				$v = $variables[$i];
 				$this->variables_hash[(string)$v->key] = (string)$v->value;
