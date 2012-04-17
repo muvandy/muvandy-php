@@ -4,7 +4,7 @@ PHP Client library for working with [Muvandy](http://muvandy.com) API
 
 ## Installation
 
-Download or clone a copy of 
+Download or clone a copy 
 
 	git clone https://github.com/muvandy/muvandy-php.git
 
