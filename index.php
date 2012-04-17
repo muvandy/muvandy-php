@@ -2,7 +2,7 @@
 
 	require_once "lib/muvandy.php";
 
-	$muvandy = new Muvandy("experiment-id", 'your-api-key');
+	$muvandy = new Muvandy("experiment-id", 'your-api-key', 'visitor-key');
 ?>
 <html>
 	<body>

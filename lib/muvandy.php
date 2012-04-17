@@ -1,7 +1,7 @@
 <?php
 /*
 *		Muvandy API Client
-*		@version 0.01b
+*		@version 1.0.2a1
 */
 
 /*
@@ -32,7 +32,7 @@ class Muvandy {
 		if (!floatval($value)) {
 			throw new Exception("Convert require's a decimal value.");
 		}
-		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/convert?value=".$value.'&'.implode('&',$this->params()));
+		$xml = $this->post(self::API_URI."/experiments/".$this->slug."/visitors/convert.xml", "value=".$value.'&'.implode('&',$this->params()));
 		if ($xml){
 			$this->parse_visitor_from_xml($xml);
 		}
@@ -51,20 +51,31 @@ class Muvandy {
 	/* PUBLIC */
 
 	// Initializes and fetches all variable versions.
-	public function __construct($slug, $api_key, $skip_fetch_vars=false, $host='muvandy.com'){
+	public function __construct($slug, $api_key, $visitor_key, $skip_fetch_vars=false, $host='muvandy.com'){
 		$this->base_uri = "http://".$host;
 		$this->token = $api_key;
 		$this->slug = $slug;
+		$this->visitor_key = $visitor_key;
 		if (!$skip_fetch_vars){
 			$this->fetch_visitor_values();
 		}
 	}
 
-	public function convert($value, $slug, $api_key, $host='dev.muvandy.com'){
-		$mvuandy = new self($slug, $api_key, true, $host);
+	public function convert($value, $slug, $api_key, $virtual_key, $host='dev.muvandy.com'){
+		$mvuandy = new self($slug, $api_key, $virtual_key, true, $host);
 		$mvuandy->_convert($value);	
 	}
 
+	public static function client_ip() {
+		if ( isset($_SERVER["REMOTE_ADDR"]) ) {
+			$ip = $_SERVER["REMOTE_ADDR"] . ' ';
+		} else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ){
+			$ip = $_SERVER["HTTP_X_FORWARDED_FOR"] . ' ';
+		} else if ( isset($_SERVER["HTTP_CLIENT_IP"]) ){
+			$ip = $_SERVER["HTTP_CLIENT_IP"] . ' ';
+		}
+		return trim($ip);
+	}
 
 	/* PRIVATE */
 
@@ -107,20 +118,9 @@ class Muvandy {
 		curl_setopt($curl_obj, CURLOPT_USERPWD, $this->token.':');
 	}
 
-	private function client_ip() {
-		if ( isset($_SERVER["REMOTE_ADDR"]) ) {
-			$ip = $_SERVER["REMOTE_ADDR"] . ' ';
-		} else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ){
-			$ip = $_SERVER["HTTP_X_FORWARDED_FOR"] . ' ';
-		} else if ( isset($_SERVER["HTTP_CLIENT_IP"]) ){
-			$ip = $_SERVER["HTTP_CLIENT_IP"] . ' ';
-		}
-		return trim($ip);
-	}
-
 	// Sets parameters
 	private function params(){
-		$arr1 = array("visitor_ip" => $this->client_ip()); //, "mode" => $_REQUEST["mode"]);
+		$arr1 = array("visitor_key" => $this->visitor_key); //, "mode" => $_REQUEST["mode"]);
 
 		if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
 
