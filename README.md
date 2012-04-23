@@ -20,8 +20,10 @@ Initialize Muvandy class.
 		require_once "lib/muvandy.php";	
 		$muvandy = new Muvandy('experiment-id', 'your-api-key', 'visitor-key');
 	?>
+
+A 'visitor_key' is required. By default, we recommend using the visitor's IP address but if you have other information on them their account id or email address make good unique visitor identifiers.
 	
-Get the value by providing variable key and an optional default value. Default value will be displayed if value is not available.
+Get the value by providing variable key and a fallback text. Fallback text will be displayed if in case muvandy returns an error for the variable.
 
 	<?=
 		$muvandy->get_variation('heading-1', '<h1>Welcome</h1>');
