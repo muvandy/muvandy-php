@@ -8,7 +8,7 @@ Download or clone a copy
 
 	git clone https://github.com/muvandy/muvandy-php.git
 
-Place the muvandy-php/lib/muvandy.php file in a location where  PHP can locate it on a 'require'.
+Place the `muvandy-php/lib/muvandy.php` file in a location where  PHP can locate it on a `require`.
 
 	require_once "lib/muvandy.php";
 
@@ -18,10 +18,10 @@ Initialize Muvandy class.
 
 	<?php
 		require_once "lib/muvandy.php";	
-		$muvandy = new Muvandy('experiment_id', 'api_key_here', 'visitor-key');
+		$muvandy = new Muvandy('experiment_id', 'api_key_here', 'visitor_key');
 	?>
 
-A 'visitor-key' is required. By default, we recommend using the visitor's IP address but if you have other information on them their account id or email address make good unique visitor identifiers.
+A `visitor_key` is required. By default, we recommend using the visitor's IP address but if you have other information on them their account id or email address make good unique visitor identifiers.
 
 
 Get the value by providing variable key and a fallback text. Fallback text will be displayed if in case muvandy returns an error for the variable.
