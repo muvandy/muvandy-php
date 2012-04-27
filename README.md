@@ -18,7 +18,7 @@ Initialize Muvandy class.
 
 	<?php
 		require_once "lib/muvandy.php";	
-		$muvandy = new Muvandy('experiment-id', 'your-api-key', 'visitor-key');
+		$muvandy = new Muvandy('experiment_id', 'api_key_here', 'visitor-key');
 	?>
 
 A 'visitor-key' is required. By default, we recommend using the visitor's IP address but if you have other information on them their account id or email address make good unique visitor identifiers.
@@ -37,6 +37,6 @@ Just include the code below on your post submission or thank you page.
 	<?php
 		require_once "lib/muvandy.php";	
 		
-		Muvandy::convert("1.0", "experiment-id", 'your-api-key', 'visitor-key');
+		Muvandy::convert("1.0", "experiment_id", 'api_key_here', 'visitor-key');
 		
 	?>
