@@ -1,6 +1,6 @@
 # muvandy-php
 
-PHP Client library for working with [Muvandy](http://muvandy.com) API
+PHP Client library for working with [Muvandy](http://www.muvandy.com) API
 
 ## Installation
 

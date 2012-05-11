@@ -51,7 +51,7 @@ class Muvandy {
 	/* PUBLIC */
 
 	// Initializes and fetches all variable versions.
-	public function __construct($slug, $api_key, $visitor_key, $skip_fetch_vars=false, $host='muvandy.com'){
+	public function __construct($slug, $api_key, $visitor_key, $skip_fetch_vars=false, $host='api.muvandy.com'){
 		$this->base_uri = "http://".$host;
 		$this->token = $api_key;
 		$this->slug = $slug;
@@ -61,7 +61,7 @@ class Muvandy {
 		}
 	}
 
-	public function convert($value, $slug, $api_key, $virtual_key, $host='dev.muvandy.com'){
+	public function convert($value, $slug, $api_key, $virtual_key, $host='api.muvandy.com'){
 		$mvuandy = new self($slug, $api_key, $virtual_key, true, $host);
 		$mvuandy->_convert($value);	
 	}
