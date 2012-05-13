@@ -51,18 +51,28 @@ class Muvandy {
 	/* PUBLIC */
 
 	// Initializes and fetches all variable versions.
-	public function __construct($slug, $api_key, $visitor_key, $skip_fetch_vars=false, $host='api.muvandy.com'){
+	public function __construct($slug, $api_key, $visitor_key, $params = array() ){
+		// Host override
+		if (isset($params["host"])){
+			$host = $params["host"];
+		}else {
+			$host='api.muvandy.com';
+		}
 		$this->base_uri = "http://".$host;
 		$this->token = $api_key;
 		$this->slug = $slug;
 		$this->visitor_key = $visitor_key;
-		if (!$skip_fetch_vars){
+		if (isset($params['segment_by'])){
+			$this->segment_name = $params['segment_by'];
+		}
+		if (!isset($params["skip_fetch_vars"])){
 			$this->fetch_visitor_values();
 		}
 	}
 
-	public function convert($value, $slug, $api_key, $virtual_key, $host='api.muvandy.com'){
-		$mvuandy = new self($slug, $api_key, $virtual_key, true, $host);
+	public function convert($value, $slug, $api_key, $virtual_key, $params=array() ){
+		$params["skip_fetch_vars"] = true;
+		$mvuandy = new self($slug, $api_key, $virtual_key, $params);
 		$mvuandy->_convert($value);	
 	}
 
@@ -82,6 +92,7 @@ class Muvandy {
 	// GET /api/v{current_version}/experiments/:slug/visitors/variable_variations.xml
 	private function fetch_visitor_values(){
 		$xml = $this->get(self::API_URI."/experiments/".$this->slug."/visitors/variable_variations.xml?".implode("&",$this->params()));
+
 		try {
 			// $this->id = (int) $xml->id;
 			$variables = $xml->variable_variations->variable;
@@ -121,11 +132,12 @@ class Muvandy {
 	// Sets parameters
 	private function params(){
 		$arr1 = array("visitor_key" => $this->visitor_key); //, "mode" => $_REQUEST["mode"]);
-
+		
+		if (isset($this->segment_name)) { $arr1['segment_name'] = $this->segment_name; }		
 		if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
 
 		if (isset($_REQUEST["mode"])){$arr1["mode"] = trim($_REQUEST["mode"]);}
-		else { $arr1["mode"] = '';}
+		//else { $arr1["mode"] = '';}
 
 		if (isset($_REQUEST["utm_term"])){$arr1["utm_term"] = trim($_REQUEST["utm_term"]);}		
 		if (isset($_REQUEST["utm_campaign"])){$arr1["utm_campaign"] = trim($_REQUEST["utm_campaign"]);}		
