@@ -134,7 +134,8 @@ class Muvandy {
 		$arr1 = array("visitor_key" => $this->visitor_key); //, "mode" => $_REQUEST["mode"]);
 		
 		if (isset($this->segment_name)) { $arr1['segment_name'] = $this->segment_name; }		
-		if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
+		// if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
+		if (isset($_SERVER["HTTP_REFERER"])) {$arr1["referer"] = $_SERVER["HTTP_REFERER"];}
 
 		if (isset($_REQUEST["mode"])){$arr1["mode"] = trim($_REQUEST["mode"]);}
 		//else { $arr1["mode"] = '';}
