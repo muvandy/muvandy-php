@@ -7,15 +7,19 @@
 /*
 *  Muvandy class
 */
+
+
 class Muvandy {
 	const API_URI = "/api/v1";
+	const CK_PREFIX = "MVNDY-";
 	
 	public $id;  // visitor $id
 
-	public $token;	
+	public $token;
 	private $variables_hash;
 	private $slug;
 	private $base_uri;
+	
 
 
 	function get_variation($key="", $default=""){
@@ -47,7 +51,6 @@ class Muvandy {
 		}
 	}
 
-
 	/* PUBLIC */
 
 	// Initializes and fetches all variable versions.
@@ -65,6 +68,7 @@ class Muvandy {
 		if (isset($params['segment_by'])){
 			$this->segment_name = $params['segment_by'];
 		}
+		
 		if (!isset($params["skip_fetch_vars"])){
 			$this->fetch_visitor_values();
 		}
@@ -85,6 +89,26 @@ class Muvandy {
 			$ip = $_SERVER["HTTP_CLIENT_IP"] . ' ';
 		}
 		return trim($ip);
+	}
+
+	public static function ini_track_info() {
+		$expires_in = time()+60*60*24*30;
+		
+		if (!empty($_SERVER["HTTP_REFERER"]) ) { 
+			if (isset($_COOKIE[self::CK_PREFIX.'referer'])) { setcookie(self::CK_PREFIX.'referer', '', time()-3600); }
+			setcookie(self::CK_PREFIX.'referer', $_SERVER["HTTP_REFERER"], $expires_in); 
+		}
+		
+		foreach (Muvandy::track_vars() as $var) {
+			if (!empty($_REQUEST[$var])) {
+				if (isset($_COOKIE[$var])) { setcookie(self::CK_PREFIX.$var, '', time()-3600);}
+				setcookie(self::CK_PREFIX.$var, trim($_REQUEST[$var]), time()+2592000);
+			}
+		}
+	}
+
+	public static function track_vars() {
+		return array("utm_term", "utm_campaign", "utm_source", "utm_medium");
 	}
 
 	/* PRIVATE */
@@ -133,17 +157,17 @@ class Muvandy {
 	private function params(){
 		$arr1 = array("visitor_key" => $this->visitor_key); //, "mode" => $_REQUEST["mode"]);
 		
-		if (isset($this->segment_name)) { $arr1['segment_name'] = $this->segment_name; }		
-		// if (isset($_REQUEST["referer"])) {$arr1["referer"] = $_REQUEST["referer"];}
-		if (isset($_SERVER["HTTP_REFERER"])) {$arr1["referer"] = $_SERVER["HTTP_REFERER"];}
+		if (isset($this->segment_name)) { $arr1['segment_name'] = $this->segment_name; }
+		if (isset($_COOKIE[self::CK_PREFIX."referer"])) $arr1["referer"] = $_COOKIE[self::CK_PREFIX."referer"];
+		else if (isset($_SERVER["HTTP_REFERER"])) $arr1["referer"] = $_SERVER["HTTP_REFERER"];
 
 		if (isset($_REQUEST["mode"])){$arr1["mode"] = trim($_REQUEST["mode"]);}
-		//else { $arr1["mode"] = '';}
 
-		if (isset($_REQUEST["utm_term"])){$arr1["utm_term"] = trim($_REQUEST["utm_term"]);}		
-		if (isset($_REQUEST["utm_campaign"])){$arr1["utm_campaign"] = trim($_REQUEST["utm_campaign"]);}		
-		if (isset($_REQUEST["utm_source"])){$arr1["utm_source"] = trim($_REQUEST["utm_source"]);}		
-		if (isset($_REQUEST["utm_medium"])){$arr1["utm_medium"] = trim($_REQUEST["utm_medium"]);}		
+		foreach (Muvandy::track_vars() as $var) {
+			$var_in_cookie = self::CK_PREFIX.$var;
+			if (isset($_COOKIE[$var_in_cookie])) { $arr1[$var] = $_COOKIE[$var_in_cookie]; }
+			else if (isset($_REQUEST[$var])) { $arr1[$var] = $_REQUEST[$var]; }
+		}	
 				
 		$arr2 = array();
 		foreach ($arr1 as $key => $value) {
@@ -183,5 +207,7 @@ class Muvandy {
 	}
 
 }
+
+Muvandy::ini_track_info();
 
 ?>
