@@ -4,7 +4,7 @@ PHP Client library for working with [Muvandy](http://www.muvandy.com) API
 
 ## Installation
 
-Download or clone a copy 
+Download *[zip file here](https://github.com/muvandy/muvandy-php/zipball/master)* or clone a copy 
 
 	git clone https://github.com/muvandy/muvandy-php.git
 
